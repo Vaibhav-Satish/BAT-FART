@@ -15,11 +15,12 @@ window.onload = function () {
     const batImg = new Image();
     batImg.src = "bat.png";
 
+    let gameStarted = false;
     const bat = {
         x: 100,
         y: canvas.height / 2,
-        width: 80,
-        height: 70,
+        width: Math.min(80, canvas.width * 0.1),
+        height: Math.min(70, canvas.height * 0.1),
         gravity: 0.5,
         lift: -12,
         velocity: 0
@@ -30,7 +31,17 @@ window.onload = function () {
     let score = 0;
     let highScore = 0;
 
+    function startGame() {
+        gameStarted = true;
+        score = 0;
+        obstacles = [];
+        bat.y = canvas.height / 2;
+        bat.velocity = 0;
+        gameLoop();
+    }
+
     function jump() {
+        if (!gameStarted) return;
         bat.velocity = bat.lift;
         farts.push({ x: bat.x - 10, y: bat.y + bat.height / 2, alpha: 1 });
     }
@@ -47,6 +58,8 @@ window.onload = function () {
     });
 
     function update() {
+        if (!gameStarted) return;
+
         bat.velocity += bat.gravity;
         bat.y += bat.velocity;
 
@@ -67,12 +80,8 @@ window.onload = function () {
                 bat.y < obstacles[i].y + obstacles[i].height &&
                 bat.y + bat.height > obstacles[i].y
             ) {
-                alert("Game Over! Score: " + score);
+                gameStarted = false;
                 if (score > highScore) highScore = score;
-                score = 0;
-                obstacles = [];
-                bat.y = canvas.height / 2;
-                bat.velocity = 0;
             }
             if (obstacles[i].x + obstacles[i].width < 0) {
                 obstacles.splice(i, 1);
@@ -101,6 +110,18 @@ window.onload = function () {
 
     function draw() {
         ctx.drawImage(bgImg, 0, 0, canvas.width, canvas.height);
+        
+        if (!gameStarted) {
+            ctx.fillStyle = "rgba(0, 0, 0, 0.7)";
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = "white";
+            ctx.font = "30px Arial";
+            ctx.textAlign = "center";
+            ctx.fillText("BAT-FART", canvas.width / 2, canvas.height / 3);
+            ctx.fillText("Tap 'FART' to Start", canvas.width / 2, canvas.height / 2);
+            return;
+        }
+        
         ctx.fillStyle = "rgba(200, 200, 200, 0.5)";
         for (let i = 0; i < farts.length; i++) {
             ctx.globalAlpha = farts[i].alpha;
@@ -109,12 +130,15 @@ window.onload = function () {
             ctx.fill();
             ctx.globalAlpha = 1.0;
         }
+        
         ctx.drawImage(batImg, bat.x, bat.y, bat.width, bat.height);
+        
         ctx.fillStyle = "black";
         for (let i = 0; i < obstacles.length; i++) {
             ctx.fillRect(obstacles[i].x, obstacles[i].y, obstacles[i].width, obstacles[i].height);
         }
-        ctx.fillStyle = "black";
+        
+        ctx.fillStyle = "white";
         ctx.font = "20px Arial";
         ctx.fillText("Score: " + score, 20, 30);
         ctx.fillText("High Score: " + highScore, 20, 60);
@@ -126,5 +150,5 @@ window.onload = function () {
         requestAnimationFrame(gameLoop);
     }
 
-    gameLoop();
+    document.getElementById("startButton").addEventListener("click", startGame);
 };
