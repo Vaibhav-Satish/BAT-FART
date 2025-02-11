@@ -16,9 +16,10 @@ window.onload = function () {
     batImg.src = "bat.png";
 
     let gameStarted = false;
+    let gameOver = false;
     const bat = {
         x: 100,
-        y: canvas.height / 2,
+        y: 50,
         width: Math.min(80, canvas.width * 0.1),
         height: Math.min(70, canvas.height * 0.1),
         gravity: 0.5,
@@ -33,6 +34,7 @@ window.onload = function () {
 
     function startGame() {
         gameStarted = true;
+        gameOver = false;
         score = 0;
         obstacles = [];
         bat.y = canvas.height / 2;
@@ -41,7 +43,7 @@ window.onload = function () {
     }
 
     function jump() {
-        if (!gameStarted) return;
+        if (!gameStarted || gameOver) return;
         bat.velocity = bat.lift;
         farts.push({ x: bat.x - 10, y: bat.y + bat.height / 2, alpha: 1 });
     }
@@ -58,7 +60,7 @@ window.onload = function () {
     });
 
     function update() {
-        if (!gameStarted) return;
+        if (!gameStarted || gameOver) return;
 
         bat.velocity += bat.gravity;
         bat.y += bat.velocity;
@@ -80,6 +82,7 @@ window.onload = function () {
                 bat.y < obstacles[i].y + obstacles[i].height &&
                 bat.y + bat.height > obstacles[i].y
             ) {
+                gameOver = true;
                 gameStarted = false;
                 if (score > highScore) highScore = score;
             }
@@ -109,19 +112,21 @@ window.onload = function () {
     }
 
     function draw() {
-        ctx.drawImage(bgImg, 0, 0, canvas.width, canvas.height);
+        ctx.fillStyle = "black";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
         
-        if (!gameStarted) {
-            ctx.fillStyle = "rgba(0, 0, 0, 0.7)";
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-            ctx.fillStyle = "white";
+        ctx.drawImage(batImg, bat.x, bat.y, bat.width, bat.height);
+
+        if (!gameStarted || gameOver) {
+            ctx.fillStyle = "red";
+            ctx.fillRect(canvas.width / 2 - 75, canvas.height / 2 - 25, 150, 50);
+            ctx.fillStyle = "blue";
             ctx.font = "30px Arial";
             ctx.textAlign = "center";
-            ctx.fillText("BAT-FART", canvas.width / 2, canvas.height / 3);
-            ctx.fillText("Tap 'FART' to Start", canvas.width / 2, canvas.height / 2);
+            ctx.fillText(gameOver ? "FART AGAIN" : "FART", canvas.width / 2, canvas.height / 2 + 10);
             return;
         }
-        
+
         ctx.fillStyle = "rgba(200, 200, 200, 0.5)";
         for (let i = 0; i < farts.length; i++) {
             ctx.globalAlpha = farts[i].alpha;
@@ -130,8 +135,6 @@ window.onload = function () {
             ctx.fill();
             ctx.globalAlpha = 1.0;
         }
-        
-        ctx.drawImage(batImg, bat.x, bat.y, bat.width, bat.height);
         
         ctx.fillStyle = "black";
         for (let i = 0; i < obstacles.length; i++) {
