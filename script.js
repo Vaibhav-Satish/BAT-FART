@@ -2,8 +2,12 @@ window.onload = function () {
     const canvas = document.getElementById("gameCanvas");
     const ctx = canvas.getContext("2d");
 
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
+    function resizeCanvas() {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+    }
+    window.addEventListener("resize", resizeCanvas);
+    resizeCanvas();
 
     const bgImg = new Image();
     bgImg.src = "background.png";
@@ -14,8 +18,8 @@ window.onload = function () {
     const bat = {
         x: 100,
         y: canvas.height / 2,
-        width: 70,
-        height: 60,
+        width: 80,
+        height: 70,
         gravity: 0.5,
         lift: -12,
         velocity: 0
@@ -37,7 +41,8 @@ window.onload = function () {
         }
     });
 
-    canvas.addEventListener("touchstart", () => {
+    canvas.addEventListener("touchstart", (event) => {
+        event.preventDefault();
         jump();
     });
 
@@ -75,12 +80,12 @@ window.onload = function () {
             }
         }
 
-        if (Math.random() < 0.015) {
-            let obstacleHeight = Math.random() * (canvas.height / 3) + 50;
+        if (Math.random() < 0.02) {
+            let obstacleHeight = Math.random() * (canvas.height / 4) + 50;
             obstacles.push({
                 x: canvas.width,
                 y: canvas.height - obstacleHeight,
-                width: 50,
+                width: 60,
                 height: obstacleHeight
             });
         }
