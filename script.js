@@ -2,8 +2,8 @@ window.onload = function () {
     const canvas = document.getElementById("gameCanvas");
     const ctx = canvas.getContext("2d");
 
-    canvas.width = 800;
-    canvas.height = 400;
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
 
     const bgImg = new Image();
     bgImg.src = "background.png";
@@ -14,10 +14,10 @@ window.onload = function () {
     const bat = {
         x: 100,
         y: canvas.height / 2,
-        width: 50,
-        height: 40,
+        width: 70,
+        height: 60,
         gravity: 0.5,
-        lift: -10,
+        lift: -12,
         velocity: 0
     };
 
@@ -26,11 +26,19 @@ window.onload = function () {
     let score = 0;
     let highScore = 0;
 
+    function jump() {
+        bat.velocity = bat.lift;
+        farts.push({ x: bat.x - 10, y: bat.y + bat.height / 2, alpha: 1 });
+    }
+
     document.addEventListener("keydown", (event) => {
         if (event.code === "Space") {
-            bat.velocity = bat.lift;
-            farts.push({ x: bat.x - 10, y: bat.y + bat.height / 2, alpha: 1 });
+            jump();
         }
+    });
+
+    canvas.addEventListener("touchstart", () => {
+        jump();
     });
 
     function update() {
@@ -47,7 +55,7 @@ window.onload = function () {
         }
 
         for (let i = 0; i < obstacles.length; i++) {
-            obstacles[i].x -= 5;
+            obstacles[i].x -= 4;
             if (
                 bat.x < obstacles[i].x + obstacles[i].width &&
                 bat.x + bat.width > obstacles[i].x &&
@@ -67,12 +75,12 @@ window.onload = function () {
             }
         }
 
-        if (Math.random() < 0.02) {
-            let obstacleHeight = Math.random() * (canvas.height - 50);
+        if (Math.random() < 0.015) {
+            let obstacleHeight = Math.random() * (canvas.height / 3) + 50;
             obstacles.push({
                 x: canvas.width,
                 y: canvas.height - obstacleHeight,
-                width: 40,
+                width: 50,
                 height: obstacleHeight
             });
         }
@@ -97,7 +105,7 @@ window.onload = function () {
             ctx.globalAlpha = 1.0;
         }
         ctx.drawImage(batImg, bat.x, bat.y, bat.width, bat.height);
-        ctx.fillStyle = "red";
+        ctx.fillStyle = "black";
         for (let i = 0; i < obstacles.length; i++) {
             ctx.fillRect(obstacles[i].x, obstacles[i].y, obstacles[i].width, obstacles[i].height);
         }
