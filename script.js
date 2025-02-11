@@ -9,8 +9,6 @@ window.onload = function () {
     window.addEventListener("resize", resizeCanvas);
     resizeCanvas();
 
-    const bgImg = new Image();
-    bgImg.src = "background.png";
     const batImg = new Image();
     batImg.src = "bat.png";
 
@@ -48,7 +46,9 @@ window.onload = function () {
     }
 
     document.addEventListener("keydown", (event) => {
-        if (event.code === "Space") jump();
+        if (event.code === "Space") {
+            jump();
+        }
     });
 
     canvas.addEventListener("touchstart", (event) => {
@@ -111,7 +111,9 @@ window.onload = function () {
     function draw() {
         ctx.fillStyle = "black";
         ctx.fillRect(0, 0, canvas.width, canvas.height);
-        
+
+        ctx.drawImage(batImg, bat.x, bat.y, bat.width, bat.height);
+
         if (!gameStarted || gameOver) {
             ctx.fillStyle = "red";
             ctx.fillRect(canvas.width / 2 - 75, canvas.height / 2 - 25, 150, 50);
@@ -122,8 +124,6 @@ window.onload = function () {
             return;
         }
 
-        ctx.drawImage(batImg, bat.x, bat.y, bat.width, bat.height);
-
         ctx.fillStyle = "rgba(200, 200, 200, 0.5)";
         for (let i = 0; i < farts.length; i++) {
             ctx.globalAlpha = farts[i].alpha;
@@ -132,12 +132,12 @@ window.onload = function () {
             ctx.fill();
             ctx.globalAlpha = 1.0;
         }
-        
+
         ctx.fillStyle = "black";
         for (let i = 0; i < obstacles.length; i++) {
             ctx.fillRect(obstacles[i].x, obstacles[i].y, obstacles[i].width, obstacles[i].height);
         }
-        
+
         ctx.fillStyle = "white";
         ctx.font = "20px Arial";
         ctx.fillText("Score: " + score, 20, 30);
