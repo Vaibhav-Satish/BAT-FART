@@ -1,0 +1,14 @@
+{
+	"folders": [
+		{
+			"path": "../../JS"
+		},
+		{
+			"name": "BAT-FART",
+			"path": "."
+		}
+	],
+	"settings": {
+		"liveServer.settings.multiRootWorkspaceName": "BAT-FART"
+	}
+}
